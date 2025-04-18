@@ -31,7 +31,7 @@ double average_grade(const Student_info& s) {
 double average_analysis(const vector<Student_info>& s) {
 	vector<double>grades;
 
-	transform(s.begin(), s.end(), back_inseter(grades), average_grade);
+	transform(s.begin(), s.end(), back_inserter(grades), average_grade);
 
 	return median(grades);
 }
@@ -40,13 +40,15 @@ double grade_aux(const Student_info& s) {
 	try {
 		return grade(s); //¼÷Á¦ ÀÖ¸£¸é
 	}
-	catch(domain)
+	catch (domain_error) {
+		return grade(s.midterm, s.final, 0); //¼÷Á¦ ¾øÀ¸¸é
+	}
 }
 
 double median_analysis(const vector<Student_info>& s) {
 	vector <double> grades;
 
-	transform(s.begin(), s.end(), back_inerter(grades), grade_aux);
+	transform(s.begin(), s.end(), back_inserter(grades), grade_aux);
 
 	return median(grades);
 }
@@ -59,6 +61,7 @@ double optimistic_median(const Student_info& s) {
 	if (nonzero.empty())
 		return grade(s.midterm, s.final, 0);
 	else
+		return grade(s.midterm, s.final, median(nonzero));
 }
 
 double optimistic_median_analysis(
@@ -70,8 +73,9 @@ double optimistic_median_analysis(
 	return median(grades);
 }
 void write_analysis(
-	ostream& out, string& name,
-	double analysis(vector<Student_info>&),
+	ostream& out, 
+	const string& name,
+	double analysis(const vector<Student_info>& s),
 	const vector<Student_info>& did, //did
 	const vector<Student_info>& didnt //didn't
 ) {
